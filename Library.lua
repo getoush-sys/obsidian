@@ -7334,7 +7334,7 @@ do
             BackgroundColor3 = function()
                 return Slider.Disabled and Library.Scheme.OutlineColor or Library.Scheme.AccentColor
             end,
-            BackgroundTransparency = 0.2,
+            BackgroundTransparency = 0.4,
             Position = UDim2.fromScale(0, 1),
             Size = UDim2.new(1, 0, 0, 15),
             Text = "",
