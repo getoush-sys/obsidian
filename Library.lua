@@ -7331,7 +7331,10 @@ do
         local Bar = New("TextButton", {
             Active = not Slider.Disabled,
             AnchorPoint = Vector2.new(0, 1),
-            BackgroundColor3 = "MainColor",
+            BackgroundColor3 = function()
+                return Slider.Disabled and Library.Scheme.OutlineColor or Library.Scheme.AccentColor
+            end,
+            BackgroundTransparency = 0.82,
             Position = UDim2.fromScale(0, 1),
             Size = UDim2.new(1, 0, 0, 15),
             Text = "",
@@ -7402,15 +7405,9 @@ do
             })
         )
 
-        local BarGradient = New("UIGradient", {
-            Color = ColorSequence.new(Library.Scheme.MainColor, Library.Scheme.MainColor:Lerp(Color3.fromRGB(255, 255, 255), 0.1)),
+        New("UIGradient", {
+            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(190, 190, 190)),
             Parent = Bar,
-        })
-        Library:AddToRegistry(BarGradient, {
-            Color = function()
-                local Color = Library.Scheme.MainColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(255, 255, 255), 0.1))
-            end,
         })
 
         local FillGradient = New("UIGradient", {
