@@ -7415,13 +7415,13 @@ do
         )
 
         local BarGradient = New("UIGradient", {
-            Color = ColorSequence.new(Library.Scheme.MainColor, Library.Scheme.MainColor:Lerp(Color3.fromRGB(0, 0, 0), 0.3)),
+            Color = ColorSequence.new(Library.Scheme.MainColor, Library.Scheme.MainColor:Lerp(Color3.fromRGB(255, 255, 255), 0.1)),
             Parent = Bar,
         })
         Library:AddToRegistry(BarGradient, {
             Color = function()
                 local Color = Library.Scheme.MainColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(0, 0, 0), 0.3))
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(255, 255, 255), 0.1))
             end,
         })
 
