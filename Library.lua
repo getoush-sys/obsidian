@@ -218,6 +218,7 @@ local Library = {
     --// Animations \\--
     TweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
     ToggleTransitionInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+    SliderTransitionInfo = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 
     TabTransitionInfo = TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
     TabSwipeOffset = 26,
@@ -4146,6 +4147,10 @@ do
                 end,
                 Parent = Checkbox,
             })
+            New("UIGradient", {
+                Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(173, 173, 173)),
+                Parent = CheckboxStroke,
+            })
 
             local CheckboxFill = New("Frame", {
                 BackgroundColor3 = "AccentColor",
@@ -4164,14 +4169,14 @@ do
             local CheckboxFillGradient = New("UIGradient", {
                 Color = ColorSequence.new(
                     Library.Scheme.AccentColor,
-                    Library.Scheme.AccentColor:Lerp(Color3.fromRGB(70, 70, 70), 0.3)
+                    Library.Scheme.AccentColor:Lerp(Color3.fromRGB(50, 50, 50), 0.4)
                 ),
                 Parent = CheckboxFill,
             })
             Library:AddToRegistry(CheckboxFillGradient, {
                 Color = function()
                     local Color = Library.Scheme.AccentColor
-                    return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(70, 70, 70), 0.3))
+                    return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(50, 50, 50), 0.4))
                 end,
             })
 
@@ -6589,15 +6594,22 @@ do
             end,
             Parent = Checkbox,
         })
+        New("UIGradient", {
+            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(173, 173, 173)),
+            Parent = CheckboxStroke,
+        })
 
         local CheckboxGradient = New("UIGradient", {
-            Color = ColorSequence.new(Library.Scheme.MainColor, Library:GetDarkerColor(Library.Scheme.MainColor)),
+            Color = ColorSequence.new(
+                Library.Scheme.MainColor,
+                Library.Scheme.MainColor:Lerp(Color3.fromRGB(0, 0, 0), 0.35)
+            ),
             Parent = Checkbox,
         })
         Library:AddToRegistry(CheckboxGradient, {
             Color = function()
                 local Color = Library.Scheme.MainColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(70, 70, 70), 0.3))
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(0, 0, 0), 0.35))
             end,
         })
 
@@ -6618,14 +6630,14 @@ do
         local CheckboxFillGradient = New("UIGradient", {
             Color = ColorSequence.new(
                 Library.Scheme.AccentColor,
-                Library.Scheme.AccentColor:Lerp(Color3.fromRGB(70, 70, 70), 0.3)
+                Library.Scheme.AccentColor:Lerp(Color3.fromRGB(50, 50, 50), 0.4)
             ),
             Parent = CheckboxFill,
         })
         Library:AddToRegistry(CheckboxFillGradient, {
             Color = function()
                 local Color = Library.Scheme.AccentColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(70, 70, 70), 0.3))
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(50, 50, 50), 0.4))
             end,
         })
 
@@ -6898,15 +6910,22 @@ do
             end,
             Parent = Switch,
         })
+        New("UIGradient", {
+            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(173, 173, 173)),
+            Parent = SwitchStroke,
+        })
 
         local SwitchGradient = New("UIGradient", {
-            Color = ColorSequence.new(Library.Scheme.MainColor, Library:GetDarkerColor(Library.Scheme.MainColor)),
+            Color = ColorSequence.new(
+                Library.Scheme.MainColor,
+                Library.Scheme.MainColor:Lerp(Color3.fromRGB(0, 0, 0), 0.35)
+            ),
             Parent = Switch,
         })
         Library:AddToRegistry(SwitchGradient, {
             Color = function()
                 local Color = Library.Scheme.MainColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(70, 70, 70), 0.3))
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(0, 0, 0), 0.35))
             end,
         })
 
@@ -6924,14 +6943,14 @@ do
         local SwitchFillGradient = New("UIGradient", {
             Color = ColorSequence.new(
                 Library.Scheme.AccentColor,
-                Library.Scheme.AccentColor:Lerp(Color3.fromRGB(70, 70, 70), 0.3)
+                Library.Scheme.AccentColor:Lerp(Color3.fromRGB(50, 50, 50), 0.4)
             ),
             Parent = SwitchFill,
         })
         Library:AddToRegistry(SwitchFillGradient, {
             Color = function()
                 local Color = Library.Scheme.AccentColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(70, 70, 70), 0.3))
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(50, 50, 50), 0.4))
             end,
         })
 
@@ -7495,24 +7514,24 @@ do
         )
 
         local BarGradient = New("UIGradient", {
-            Color = ColorSequence.new(Library.Scheme.MainColor, Library.Scheme.MainColor:Lerp(Color3.fromRGB(0, 0, 0), 0.15)),
+            Color = ColorSequence.new(Library.Scheme.MainColor, Library.Scheme.MainColor:Lerp(Color3.fromRGB(0, 0, 0), 0.3)),
             Parent = Bar,
         })
         Library:AddToRegistry(BarGradient, {
             Color = function()
                 local Color = Library.Scheme.MainColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(0, 0, 0), 0.15))
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(0, 0, 0), 0.3))
             end,
         })
 
         local FillGradient = New("UIGradient", {
-            Color = ColorSequence.new(Library.Scheme.AccentColor, Library.Scheme.AccentColor:Lerp(Color3.fromRGB(60, 60, 60), 0.3)),
+            Color = ColorSequence.new(Library.Scheme.AccentColor, Library.Scheme.AccentColor:Lerp(Color3.fromRGB(40, 40, 40), 0.45)),
             Parent = Fill,
         })
         Library:AddToRegistry(FillGradient, {
             Color = function()
                 local Color = Slider.Disabled and Library.Scheme.OutlineColor or Library.Scheme.AccentColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(60, 60, 60), 0.3))
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(40, 40, 40), 0.45))
             end,
         })
 
@@ -7566,7 +7585,15 @@ do
             end
 
             local X = (Slider.Value - Slider.Min) / (Slider.Max - Slider.Min)
-            Fill.Size = UDim2.fromScale(X, 1)
+
+            if Slider.FillTween then
+                Slider.FillTween:Cancel()
+            end
+
+            Slider.FillTween = TweenService:Create(Fill, Library.SliderTransitionInfo, {
+                Size = UDim2.fromScale(X, 1),
+            })
+            Slider.FillTween:Play()
         end
 
         function Slider:OnChanged(Func)
