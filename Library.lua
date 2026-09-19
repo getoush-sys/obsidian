@@ -4128,7 +4128,9 @@ do
 
             local Checkbox = New("Frame", {
                 AnchorPoint = Vector2.new(0, 0.5),
-                BackgroundColor3 = "MainColor",
+                BackgroundColor3 = function()
+                    return KeybindsToggle.State and Library.Scheme.AccentColor or Library.Scheme.MainColor
+                end,
                 Position = UDim2.fromScale(0, 0.5),
                 Size = UDim2.fromOffset(14, 14),
                 SizeConstraint = Enum.SizeConstraint.RelativeYY,
@@ -4148,36 +4150,13 @@ do
                 Parent = Checkbox,
             })
             New("UIGradient", {
-                Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(173, 173, 173)),
+                Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
                 Parent = CheckboxStroke,
             })
 
-            local CheckboxFill = New("Frame", {
-                BackgroundColor3 = "AccentColor",
-                BackgroundTransparency = 1,
-                Size = UDim2.fromScale(1, 1),
-                ZIndex = 2,
+            New("UIGradient", {
+                Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
                 Parent = Checkbox,
-            })
-            table.insert(
-                Library.Corners,
-                New("UICorner", {
-                    CornerRadius = UDim.new(0, Library.CornerRadius / 2),
-                    Parent = CheckboxFill,
-                })
-            )
-            local CheckboxFillGradient = New("UIGradient", {
-                Color = ColorSequence.new(
-                    Library.Scheme.AccentColor,
-                    Library.Scheme.AccentColor:Lerp(Color3.fromRGB(50, 50, 50), 0.4)
-                ),
-                Parent = CheckboxFill,
-            })
-            Library:AddToRegistry(CheckboxFillGradient, {
-                Color = function()
-                    local Color = Library.Scheme.AccentColor
-                    return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(50, 50, 50), 0.4))
-                end,
             })
 
             local CheckImage = New("ImageLabel", {
@@ -4198,13 +4177,8 @@ do
                 Label.TextTransparency = State and 0 or 0.5
                 CheckImage.ImageTransparency = 1
 
-                Checkbox.BackgroundColor3 = Library.Scheme.MainColor
-                Checkbox.BackgroundTransparency = 0
-
-                Library.Registry[Checkbox].BackgroundColor3 = "MainColor"
-
-                TweenService:Create(CheckboxFill, Library.ToggleTransitionInfo, {
-                    BackgroundTransparency = State and 0 or 1,
+                TweenService:Create(Checkbox, Library.ToggleTransitionInfo, {
+                    BackgroundColor3 = State and Library.Scheme.AccentColor or Library.Scheme.MainColor,
                 }):Play()
                 TweenService:Create(CheckboxStroke, Library.ToggleTransitionInfo, {
                     Color = State and Library.Scheme.AccentColor or Library.Scheme.OutlineColor,
@@ -6571,7 +6545,13 @@ do
         })
 
         local Checkbox = New("Frame", {
-            BackgroundColor3 = "MainColor",
+            BackgroundColor3 = function()
+                if Toggle.Disabled then
+                    return Library.Scheme.BackgroundColor
+                end
+
+                return Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
+            end,
             Size = UDim2.fromScale(1, 1),
             SizeConstraint = Enum.SizeConstraint.RelativeYY,
             Parent = Button,
@@ -6595,50 +6575,13 @@ do
             Parent = Checkbox,
         })
         New("UIGradient", {
-            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(173, 173, 173)),
+            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
             Parent = CheckboxStroke,
         })
 
-        local CheckboxGradient = New("UIGradient", {
-            Color = ColorSequence.new(
-                Library.Scheme.MainColor,
-                Library.Scheme.MainColor:Lerp(Color3.fromRGB(0, 0, 0), 0.35)
-            ),
+        New("UIGradient", {
+            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
             Parent = Checkbox,
-        })
-        Library:AddToRegistry(CheckboxGradient, {
-            Color = function()
-                local Color = Library.Scheme.MainColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(0, 0, 0), 0.35))
-            end,
-        })
-
-        local CheckboxFill = New("Frame", {
-            BackgroundColor3 = "AccentColor",
-            BackgroundTransparency = 1,
-            Size = UDim2.fromScale(1, 1),
-            ZIndex = 2,
-            Parent = Checkbox,
-        })
-        table.insert(
-            Library.Corners,
-            New("UICorner", {
-                CornerRadius = UDim.new(0, Library.CornerRadius / 2),
-                Parent = CheckboxFill,
-            })
-        )
-        local CheckboxFillGradient = New("UIGradient", {
-            Color = ColorSequence.new(
-                Library.Scheme.AccentColor,
-                Library.Scheme.AccentColor:Lerp(Color3.fromRGB(50, 50, 50), 0.4)
-            ),
-            Parent = CheckboxFill,
-        })
-        Library:AddToRegistry(CheckboxFillGradient, {
-            Color = function()
-                local Color = Library.Scheme.AccentColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(50, 50, 50), 0.4))
-            end,
         })
 
         local CheckImage = New("ImageLabel", {
@@ -6670,24 +6613,16 @@ do
 
                 Checkbox.BackgroundColor3 = Library.Scheme.BackgroundColor
                 Checkbox.BackgroundTransparency = 0
-                CheckboxFill.BackgroundTransparency = 1
                 CheckboxStroke.Color = Library.Scheme.OutlineColor
-
-                Library.Registry[Checkbox].BackgroundColor3 = "BackgroundColor"
 
                 return
             end
 
-            Checkbox.BackgroundColor3 = Library.Scheme.MainColor
-            Checkbox.BackgroundTransparency = 0
-            Library.Registry[Checkbox].BackgroundColor3 = "MainColor"
-            Library.Registry[Checkbox].BackgroundTransparency = 0
-
             TweenService:Create(Label, Library.ToggleTransitionInfo, {
                 TextTransparency = Toggle.Value and 0 or 0.4,
             }):Play()
-            TweenService:Create(CheckboxFill, Library.ToggleTransitionInfo, {
-                BackgroundTransparency = Toggle.Value and 0 or 1,
+            TweenService:Create(Checkbox, Library.ToggleTransitionInfo, {
+                BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor,
             }):Play()
             TweenService:Create(CheckboxStroke, Library.ToggleTransitionInfo, {
                 Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.OutlineColor,
@@ -6891,7 +6826,13 @@ do
 
         local Switch = New("Frame", {
             AnchorPoint = Vector2.new(1, 0),
-            BackgroundColor3 = "MainColor",
+            BackgroundColor3 = function()
+                if Toggle.Disabled then
+                    return Library.Scheme.MainColor
+                end
+
+                return Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
+            end,
             Position = UDim2.fromScale(1, 0),
             Size = UDim2.fromOffset(32, 18),
             Parent = Button,
@@ -6911,47 +6852,13 @@ do
             Parent = Switch,
         })
         New("UIGradient", {
-            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(173, 173, 173)),
+            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
             Parent = SwitchStroke,
         })
 
-        local SwitchGradient = New("UIGradient", {
-            Color = ColorSequence.new(
-                Library.Scheme.MainColor,
-                Library.Scheme.MainColor:Lerp(Color3.fromRGB(0, 0, 0), 0.35)
-            ),
+        New("UIGradient", {
+            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
             Parent = Switch,
-        })
-        Library:AddToRegistry(SwitchGradient, {
-            Color = function()
-                local Color = Library.Scheme.MainColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(0, 0, 0), 0.35))
-            end,
-        })
-
-        local SwitchFill = New("Frame", {
-            BackgroundColor3 = "AccentColor",
-            BackgroundTransparency = 1,
-            Size = UDim2.fromScale(1, 1),
-            ZIndex = 2,
-            Parent = Switch,
-        })
-        New("UICorner", {
-            CornerRadius = UDim.new(1, 0),
-            Parent = SwitchFill,
-        })
-        local SwitchFillGradient = New("UIGradient", {
-            Color = ColorSequence.new(
-                Library.Scheme.AccentColor,
-                Library.Scheme.AccentColor:Lerp(Color3.fromRGB(50, 50, 50), 0.4)
-            ),
-            Parent = SwitchFill,
-        })
-        Library:AddToRegistry(SwitchFillGradient, {
-            Color = function()
-                local Color = Library.Scheme.AccentColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(50, 50, 50), 0.4))
-            end,
         })
 
         local Ball = New("Frame", {
@@ -6983,22 +6890,16 @@ do
                 Label.TextTransparency = 0.8
 
                 Switch.BackgroundColor3 = Library.Scheme.MainColor
-                SwitchFill.BackgroundTransparency = 1
                 SwitchStroke.Color = Library.Scheme.OutlineColor
-
-                Library.Registry[Switch].BackgroundColor3 = "MainColor"
 
                 return
             end
 
-            Switch.BackgroundColor3 = Library.Scheme.MainColor
-            Library.Registry[Switch].BackgroundColor3 = "MainColor"
-
             TweenService:Create(Label, Library.ToggleTransitionInfo, {
                 TextTransparency = Toggle.Value and 0 or 0.4,
             }):Play()
-            TweenService:Create(SwitchFill, Library.ToggleTransitionInfo, {
-                BackgroundTransparency = Toggle.Value and 0 or 1,
+            TweenService:Create(Switch, Library.ToggleTransitionInfo, {
+                BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor,
             }):Play()
             TweenService:Create(SwitchStroke, Library.ToggleTransitionInfo, {
                 Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.OutlineColor,
