@@ -4151,11 +4151,6 @@ do
             })
             New("UIGradient", {
                 Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
-                Parent = CheckboxStroke,
-            })
-
-            New("UIGradient", {
-                Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
                 Parent = Checkbox,
             })
 
@@ -4181,6 +4176,7 @@ do
                     BackgroundColor3 = State and Library.Scheme.AccentColor or Library.Scheme.MainColor,
                 }):Play()
                 TweenService:Create(CheckboxStroke, Library.ToggleTransitionInfo, {
+                    Transparency = State and 1 or 0,
                     Color = State and Library.Scheme.AccentColor or Library.Scheme.OutlineColor,
                 }):Play()
             end
@@ -6576,11 +6572,6 @@ do
         })
         New("UIGradient", {
             Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
-            Parent = CheckboxStroke,
-        })
-
-        New("UIGradient", {
-            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
             Parent = Checkbox,
         })
 
@@ -6605,7 +6596,6 @@ do
                 return
             end
 
-            CheckboxStroke.Transparency = Toggle.Disabled and 0.5 or 0
             CheckImage.ImageTransparency = 1
 
             if Toggle.Disabled then
@@ -6613,6 +6603,7 @@ do
 
                 Checkbox.BackgroundColor3 = Library.Scheme.BackgroundColor
                 Checkbox.BackgroundTransparency = 0
+                CheckboxStroke.Transparency = 0.5
                 CheckboxStroke.Color = Library.Scheme.OutlineColor
 
                 return
@@ -6625,6 +6616,7 @@ do
                 BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor,
             }):Play()
             TweenService:Create(CheckboxStroke, Library.ToggleTransitionInfo, {
+                Transparency = Toggle.Value and 1 or 0,
                 Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.OutlineColor,
             }):Play()
         end
@@ -6853,11 +6845,6 @@ do
         })
         New("UIGradient", {
             Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
-            Parent = SwitchStroke,
-        })
-
-        New("UIGradient", {
-            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
             Parent = Switch,
         })
 
@@ -6884,12 +6871,12 @@ do
             Ball.BackgroundTransparency = 1
 
             Switch.BackgroundTransparency = Toggle.Disabled and 0.75 or 0
-            SwitchStroke.Transparency = Toggle.Disabled and 0.75 or 0
 
             if Toggle.Disabled then
                 Label.TextTransparency = 0.8
 
                 Switch.BackgroundColor3 = Library.Scheme.MainColor
+                SwitchStroke.Transparency = 0.75
                 SwitchStroke.Color = Library.Scheme.OutlineColor
 
                 return
@@ -6902,6 +6889,7 @@ do
                 BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor,
             }):Play()
             TweenService:Create(SwitchStroke, Library.ToggleTransitionInfo, {
+                Transparency = Toggle.Value and 1 or 0,
                 Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.OutlineColor,
             }):Play()
         end
