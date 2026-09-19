@@ -4159,11 +4159,19 @@ do
                 Label.TextTransparency = State and 0 or 0.5
                 CheckImage.ImageTransparency = 1
 
-                Checkbox.BackgroundColor3 = State and Library.Scheme.AccentColor or Library.Scheme.MainColor
-                CheckboxStroke.Color = State and Library.Scheme.AccentColor or Library.Scheme.OutlineColor
+                Checkbox.BackgroundColor3 = State and Library.Scheme.AccentColor or Library.Scheme.FontColor
+                Checkbox.BackgroundTransparency = State and 0 or 0.8
+                CheckboxStroke.Color = State and Library.Scheme.AccentColor or Library.Scheme.FontColor
 
-                Library.Registry[Checkbox].BackgroundColor3 = State and "AccentColor" or "MainColor"
-                Library.Registry[CheckboxStroke].Color = State and "AccentColor" or "OutlineColor"
+                Library.Registry[Checkbox].BackgroundColor3 = function()
+                    return State and Library.Scheme.AccentColor or Library.Scheme.FontColor
+                end
+                Library.Registry[Checkbox].BackgroundTransparency = function()
+                    return State and 0 or 0.8
+                end
+                Library.Registry[CheckboxStroke].Color = function()
+                    return State and Library.Scheme.AccentColor or Library.Scheme.FontColor
+                end
             end
 
             function KeybindsToggle:SetText(Text)
@@ -6550,7 +6558,7 @@ do
         })
         Library:AddToRegistry(CheckboxGradient, {
             Color = function()
-                local Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
+                local Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.FontColor
                 return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(70, 70, 70), 0.3))
             end,
         })
@@ -6582,6 +6590,7 @@ do
                 Label.TextTransparency = 0.8
 
                 Checkbox.BackgroundColor3 = Library.Scheme.BackgroundColor
+                Checkbox.BackgroundTransparency = 0
                 Library.Registry[Checkbox].BackgroundColor3 = "BackgroundColor"
 
                 return
@@ -6591,11 +6600,19 @@ do
                 TextTransparency = Toggle.Value and 0 or 0.4,
             }):Play()
 
-            Checkbox.BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
-            CheckboxStroke.Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.OutlineColor
+            Checkbox.BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.FontColor
+            Checkbox.BackgroundTransparency = Toggle.Value and 0 or 0.8
+            CheckboxStroke.Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.FontColor
 
-            Library.Registry[Checkbox].BackgroundColor3 = Toggle.Value and "AccentColor" or "MainColor"
-            Library.Registry[CheckboxStroke].Color = Toggle.Value and "AccentColor" or "OutlineColor"
+            Library.Registry[Checkbox].BackgroundColor3 = function()
+                return Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.FontColor
+            end
+            Library.Registry[Checkbox].BackgroundTransparency = function()
+                return Toggle.Value and 0 or 0.8
+            end
+            Library.Registry[CheckboxStroke].Color = function()
+                return Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.FontColor
+            end
         end
 
         function Toggle:OnChanged(Func)
@@ -6822,7 +6839,7 @@ do
         })
         Library:AddToRegistry(SwitchGradient, {
             Color = function()
-                local Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
+                local Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.FontColor
                 return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(70, 70, 70), 0.3))
             end,
         })
@@ -6849,13 +6866,13 @@ do
 
             Ball.BackgroundTransparency = 1
 
-            Switch.BackgroundTransparency = Toggle.Disabled and 0.75 or 0
             SwitchStroke.Transparency = Toggle.Disabled and 0.75 or 0
 
             if Toggle.Disabled then
                 Label.TextTransparency = 0.8
 
                 Switch.BackgroundColor3 = Library.Scheme.MainColor
+                Switch.BackgroundTransparency = 0.75
                 SwitchStroke.Color = Library.Scheme.OutlineColor
 
                 Library.Registry[Switch].BackgroundColor3 = "MainColor"
@@ -6868,11 +6885,19 @@ do
                 TextTransparency = Toggle.Value and 0 or 0.4,
             }):Play()
 
-            Switch.BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
-            SwitchStroke.Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.OutlineColor
+            Switch.BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.FontColor
+            Switch.BackgroundTransparency = Toggle.Value and 0 or 0.8
+            SwitchStroke.Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.FontColor
 
-            Library.Registry[Switch].BackgroundColor3 = Toggle.Value and "AccentColor" or "MainColor"
-            Library.Registry[SwitchStroke].Color = Toggle.Value and "AccentColor" or "OutlineColor"
+            Library.Registry[Switch].BackgroundColor3 = function()
+                return Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.FontColor
+            end
+            Library.Registry[Switch].BackgroundTransparency = function()
+                return Toggle.Value and 0 or 0.8
+            end
+            Library.Registry[SwitchStroke].Color = function()
+                return Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.FontColor
+            end
         end
 
         function Toggle:OnChanged(Func)
