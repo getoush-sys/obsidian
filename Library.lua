@@ -4139,7 +4139,7 @@ do
                     Parent = Checkbox,
                 })
             )
-            New("UIStroke", {
+            local CheckboxStroke = New("UIStroke", {
                 Color = "OutlineColor",
                 Parent = Checkbox,
             })
@@ -4157,7 +4157,13 @@ do
 
             function KeybindsToggle:Display(State)
                 Label.TextTransparency = State and 0 or 0.5
-                CheckImage.ImageTransparency = State and 0 or 1
+                CheckImage.ImageTransparency = 1
+
+                Checkbox.BackgroundColor3 = State and Library.Scheme.AccentColor or Library.Scheme.MainColor
+                CheckboxStroke.Color = State and Library.Scheme.AccentColor or Library.Scheme.OutlineColor
+
+                Library.Registry[Checkbox].BackgroundColor3 = State and "AccentColor" or "MainColor"
+                Library.Registry[CheckboxStroke].Color = State and "AccentColor" or "OutlineColor"
             end
 
             function KeybindsToggle:SetText(Text)
@@ -6538,6 +6544,17 @@ do
             Parent = Checkbox,
         })
 
+        local CheckboxGradient = New("UIGradient", {
+            Color = ColorSequence.new(Library.Scheme.MainColor, Library:GetDarkerColor(Library.Scheme.MainColor)),
+            Parent = Checkbox,
+        })
+        Library:AddToRegistry(CheckboxGradient, {
+            Color = function()
+                local Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(70, 70, 70), 0.3))
+            end,
+        })
+
         local CheckImage = New("ImageLabel", {
             ImageColor3 = "FontColor",
             ImageTransparency = 1,
@@ -6559,10 +6576,10 @@ do
             end
 
             CheckboxStroke.Transparency = Toggle.Disabled and 0.5 or 0
+            CheckImage.ImageTransparency = 1
 
             if Toggle.Disabled then
                 Label.TextTransparency = 0.8
-                CheckImage.ImageTransparency = Toggle.Value and 0.8 or 1
 
                 Checkbox.BackgroundColor3 = Library.Scheme.BackgroundColor
                 Library.Registry[Checkbox].BackgroundColor3 = "BackgroundColor"
@@ -6573,12 +6590,12 @@ do
             TweenService:Create(Label, Library.TweenInfo, {
                 TextTransparency = Toggle.Value and 0 or 0.4,
             }):Play()
-            TweenService:Create(CheckImage, Library.TweenInfo, {
-                ImageTransparency = Toggle.Value and 0 or 1,
-            }):Play()
 
-            Checkbox.BackgroundColor3 = Library.Scheme.MainColor
-            Library.Registry[Checkbox].BackgroundColor3 = "MainColor"
+            Checkbox.BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
+            CheckboxStroke.Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.OutlineColor
+
+            Library.Registry[Checkbox].BackgroundColor3 = Toggle.Value and "AccentColor" or "MainColor"
+            Library.Registry[CheckboxStroke].Color = Toggle.Value and "AccentColor" or "OutlineColor"
         end
 
         function Toggle:OnChanged(Func)
@@ -6799,6 +6816,17 @@ do
             Parent = Switch,
         })
 
+        local SwitchGradient = New("UIGradient", {
+            Color = ColorSequence.new(Library.Scheme.MainColor, Library:GetDarkerColor(Library.Scheme.MainColor)),
+            Parent = Switch,
+        })
+        Library:AddToRegistry(SwitchGradient, {
+            Color = function()
+                local Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(70, 70, 70), 0.3))
+            end,
+        })
+
         local Ball = New("Frame", {
             BackgroundColor3 = "FontColor",
             Size = UDim2.fromScale(1, 1),
@@ -6819,26 +6847,19 @@ do
                 return
             end
 
-            local Offset = Toggle.Value and 1 or 0
+            Ball.BackgroundTransparency = 1
 
             Switch.BackgroundTransparency = Toggle.Disabled and 0.75 or 0
             SwitchStroke.Transparency = Toggle.Disabled and 0.75 or 0
 
-            Switch.BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
-            SwitchStroke.Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.OutlineColor
-
-            Library.Registry[Switch].BackgroundColor3 = Toggle.Value and "AccentColor" or "MainColor"
-            Library.Registry[SwitchStroke].Color = Toggle.Value and "AccentColor" or "OutlineColor"
-
             if Toggle.Disabled then
                 Label.TextTransparency = 0.8
-                Ball.AnchorPoint = Vector2.new(Offset, 0)
-                Ball.Position = UDim2.fromScale(Offset, 0)
 
-                Ball.BackgroundColor3 = Library:GetDarkerColor(Library.Scheme.FontColor)
-                Library.Registry[Ball].BackgroundColor3 = function()
-                    return Library:GetDarkerColor(Library.Scheme.FontColor)
-                end
+                Switch.BackgroundColor3 = Library.Scheme.MainColor
+                SwitchStroke.Color = Library.Scheme.OutlineColor
+
+                Library.Registry[Switch].BackgroundColor3 = "MainColor"
+                Library.Registry[SwitchStroke].Color = "OutlineColor"
 
                 return
             end
@@ -6846,13 +6867,12 @@ do
             TweenService:Create(Label, Library.TweenInfo, {
                 TextTransparency = Toggle.Value and 0 or 0.4,
             }):Play()
-            TweenService:Create(Ball, Library.TweenInfo, {
-                AnchorPoint = Vector2.new(Offset, 0),
-                Position = UDim2.fromScale(Offset, 0),
-            }):Play()
 
-            Ball.BackgroundColor3 = Library.Scheme.FontColor
-            Library.Registry[Ball].BackgroundColor3 = "FontColor"
+            Switch.BackgroundColor3 = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.MainColor
+            SwitchStroke.Color = Toggle.Value and Library.Scheme.AccentColor or Library.Scheme.OutlineColor
+
+            Library.Registry[Switch].BackgroundColor3 = Toggle.Value and "AccentColor" or "MainColor"
+            Library.Registry[SwitchStroke].Color = Toggle.Value and "AccentColor" or "OutlineColor"
         end
 
         function Toggle:OnChanged(Func)
@@ -7362,6 +7382,28 @@ do
                 Parent = Fill,
             })
         )
+
+        local BarGradient = New("UIGradient", {
+            Color = ColorSequence.new(Library.Scheme.MainColor, Library.Scheme.MainColor:Lerp(Color3.fromRGB(0, 0, 0), 0.15)),
+            Parent = Bar,
+        })
+        Library:AddToRegistry(BarGradient, {
+            Color = function()
+                local Color = Library.Scheme.MainColor
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(0, 0, 0), 0.15))
+            end,
+        })
+
+        local FillGradient = New("UIGradient", {
+            Color = ColorSequence.new(Library.Scheme.AccentColor, Library.Scheme.AccentColor:Lerp(Color3.fromRGB(60, 60, 60), 0.3)),
+            Parent = Fill,
+        })
+        Library:AddToRegistry(FillGradient, {
+            Color = function()
+                local Color = Slider.Disabled and Library.Scheme.OutlineColor or Library.Scheme.AccentColor
+                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(60, 60, 60), 0.3))
+            end,
+        })
 
         function Slider:UpdateColors()
             if Library.Unloaded then
