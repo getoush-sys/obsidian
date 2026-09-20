@@ -2283,6 +2283,41 @@ function Library:AddHover(Button: GuiObject, Connections, OnEnter, OnLeave)
     end
 end
 
+function Library:CreateDepthShadow(Holder: GuiObject, Radius: number, Options)
+    Options = Options or {}
+
+    local TotalLayers = Options.Layers or 6
+    local MinSpread = Options.MinSpread or 2
+    local MaxSpread = Options.MaxSpread or 14
+    local MinOffsetY = Options.MinOffsetY or 2
+    local MaxOffsetY = Options.MaxOffsetY or 7
+    local LayerAlpha = Options.Alpha or 0.045
+    local BaseZIndex = Options.ZIndex or 0
+
+    for Index = TotalLayers, 1, -1 do
+        local Ratio = Index / TotalLayers
+        local Spread = math.floor(MinSpread + (MaxSpread - MinSpread) * Ratio + 0.5)
+        local OffsetY = math.floor(MinOffsetY + (MaxOffsetY - MinOffsetY) * Ratio + 0.5)
+
+        local Shadow = New("Frame", {
+            Name = "DepthShadow",
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            Position = UDim2.new(0.5, 0, 0.5, OffsetY),
+            Size = UDim2.new(1, Spread * 2, 1, Spread * 2),
+            BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+            BackgroundTransparency = 1 - LayerAlpha,
+            BorderSizePixel = 0,
+            ZIndex = BaseZIndex,
+            Parent = Holder,
+        })
+
+        New("UICorner", {
+            CornerRadius = UDim.new(0, Radius + Spread),
+            Parent = Shadow,
+        })
+    end
+end
+
 function Library:AddBlank(Frame: GuiObject, Size: UDim2)
     return New("Frame", {
         BackgroundTransparency = 1,
@@ -3400,6 +3435,34 @@ function Library:AddContextMenu(
         end
     end
 
+    New("UIGradient", {
+        Rotation = 90,
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(224, 224, 224)),
+        }),
+        Parent = Menu,
+    })
+
+    local ShadowHolder = New("Frame", {
+        Name = "ContextShadow",
+        BackgroundTransparency = 1,
+        Position = UDim2.fromOffset(0, 0),
+        Size = UDim2.fromOffset(1, 1),
+        Visible = false,
+        ZIndex = 0,
+        Parent = ParentGui,
+    })
+
+    Library:CreateDepthShadow(ShadowHolder, (Library.CornerRadius / 2) * (Library.DPIScale or 1), {
+        Layers = 5,
+        MinSpread = 2,
+        MaxSpread = 12,
+        MinOffsetY = 2,
+        MaxOffsetY = 6,
+        Alpha = 0.05,
+    })
+
     local Table = {
         Connections = {},
         Destroyed = false,
@@ -3410,9 +3473,11 @@ function Library:AddContextMenu(
         Holder = Holder,
         Menu = Menu,
         Corner = Corner,
+        Shadow = ShadowHolder,
 
         List = nil,
         Signal = nil,
+        ShadowSignal = nil,
 
         Size = Size,
         AutoSizeY = List == 1,
@@ -3451,6 +3516,29 @@ function Library:AddContextMenu(
         local TargetParent = if ParentGui == Overlay then Overlay else ParentGui
         Menu.Parent = nil
         Menu.Parent = TargetParent
+
+        if ShadowHolder then
+            ShadowHolder.Parent = TargetParent
+            ShadowHolder.ZIndex = Menu.ZIndex - 1
+            ShadowHolder.Visible = true
+        end
+
+        if ShadowHolder and not Table.ShadowSignal then
+            Table.ShadowSignal = Library:GiveSignal(RunService.RenderStepped:Connect(function()
+                if not (ShadowHolder and ShadowHolder.Visible and Menu.Visible) then
+                    return
+                end
+
+                local ShadowParent = ShadowHolder.Parent
+                local ParentPosition = ShadowParent and ShadowParent.AbsolutePosition or Vector2.zero
+
+                ShadowHolder.Position = UDim2.fromOffset(
+                    Menu.AbsolutePosition.X - ParentPosition.X,
+                    Menu.AbsolutePosition.Y - ParentPosition.Y
+                )
+                ShadowHolder.Size = UDim2.fromOffset(Menu.AbsoluteSize.X, Menu.AbsoluteSize.Y)
+            end))
+        end
 
         if typeof(Offset) == "function" then
             Menu.Position = UDim2.fromOffset(
@@ -3553,6 +3641,11 @@ function Library:AddContextMenu(
             Table.Signal = nil
         end
 
+        if Table.ShadowSignal then
+            Table.ShadowSignal:Disconnect()
+            Table.ShadowSignal = nil
+        end
+
         Table.Active = false
         CurrentMenu = nil
 
@@ -3587,6 +3680,9 @@ function Library:AddContextMenu(
                     Table.OpenCloseTween = nil
 
                     Menu.Visible = false
+                    if ShadowHolder then
+                        ShadowHolder.Visible = false
+                    end
                     if Table.AutoSizeY then
                         Menu.AutomaticSize = Enum.AutomaticSize.Y
                     end
@@ -3596,6 +3692,9 @@ function Library:AddContextMenu(
             Tween:Play()
         else
             Menu.Visible = false
+            if ShadowHolder then
+                ShadowHolder.Visible = false
+            end
         end
     end
 
@@ -3633,6 +3732,17 @@ function Library:AddContextMenu(
         local MenuIndex = table.find(Library.ContextMenus, Table)
         if MenuIndex then
             table.remove(Library.ContextMenus, MenuIndex)
+        end
+
+        if Table.ShadowSignal then
+            Table.ShadowSignal:Disconnect()
+            Table.ShadowSignal = nil
+        end
+
+        if ShadowHolder then
+            ShadowHolder:Destroy()
+            ShadowHolder = nil
+            Table.Shadow = nil
         end
 
         if Menu then
@@ -3698,6 +3808,39 @@ table.insert(
         Parent = TooltipLabel,
     })
 )
+New("UIGradient", {
+    Rotation = 90,
+    Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(224, 224, 224)),
+    }),
+    Parent = TooltipLabel,
+})
+
+local TooltipShadow = New("Frame", {
+    Name = "TooltipShadow",
+    BackgroundTransparency = 1,
+    Position = UDim2.fromOffset(0, 0),
+    Size = UDim2.fromOffset(1, 1),
+    Visible = false,
+    ZIndex = 29,
+    Parent = ScreenGui,
+})
+
+Library:CreateDepthShadow(TooltipShadow, (Library.CornerRadius / 2) * (Library.DPIScale or 1), {
+    Layers = 4,
+    MinSpread = 2,
+    MaxSpread = 9,
+    MinOffsetY = 2,
+    MaxOffsetY = 5,
+    Alpha = 0.06,
+})
+
+local function SetTooltipVisible(Visible)
+    TooltipLabel.Visible = Visible
+    TooltipShadow.Visible = Visible and TooltipShadow.Parent ~= nil
+end
+
 TooltipLabel:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
     if Library.Unloaded then
         return
@@ -3739,9 +3882,10 @@ function Library:AddTooltip(InfoStr: string, DisabledInfoStr: string, HoverInsta
         else
             TooltipLabel.Parent = ScreenGui
         end
+        TooltipShadow.Parent = TooltipLabel.Parent
 
         TooltipLabel.Text = TooltipTable.Disabled and DisabledInfoStr or InfoStr
-        TooltipLabel.Visible = true
+        SetTooltipVisible(true)
 
         while
             (Library.Toggled or Library.ActiveLoading)
@@ -3754,10 +3898,18 @@ function Library:AddTooltip(InfoStr: string, DisabledInfoStr: string, HoverInsta
                 Mouse.Y + (Library.ShowCustomCursor and 8 or 12)
             )
 
+            local ShadowParent = TooltipShadow.Parent
+            local ParentPosition = ShadowParent and ShadowParent.AbsolutePosition or Vector2.zero
+            TooltipShadow.Position = UDim2.fromOffset(
+                TooltipLabel.AbsolutePosition.X - ParentPosition.X,
+                TooltipLabel.AbsolutePosition.Y - ParentPosition.Y
+            )
+            TooltipShadow.Size = UDim2.fromOffset(TooltipLabel.AbsoluteSize.X, TooltipLabel.AbsoluteSize.Y)
+
             RunService.RenderStepped:Wait()
         end
 
-        TooltipLabel.Visible = false
+        SetTooltipVisible(false)
         CurrentHoverInstance = nil
     end
 
@@ -3777,7 +3929,7 @@ function Library:AddTooltip(InfoStr: string, DisabledInfoStr: string, HoverInsta
             return
         end
 
-        TooltipLabel.Visible = false
+        SetTooltipVisible(false)
         CurrentHoverInstance = nil
     end))
 
@@ -3791,7 +3943,7 @@ function Library:AddTooltip(InfoStr: string, DisabledInfoStr: string, HoverInsta
 
         if CurrentHoverInstance == HoverInstance then
             if TooltipLabel then
-                TooltipLabel.Visible = false
+                SetTooltipVisible(false)
             end
 
             CurrentHoverInstance = nil
