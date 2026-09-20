@@ -2273,6 +2273,16 @@ function Library:AddOutline(Frame: GuiObject)
     return OutlineStroke, ShadowStroke
 end
 
+function Library:AddHover(Button: GuiObject, Connections, OnEnter, OnLeave)
+    if OnEnter then
+        table.insert(Connections, Button.MouseEnter:Connect(OnEnter))
+    end
+
+    if OnLeave then
+        table.insert(Connections, Button.MouseLeave:Connect(OnLeave))
+    end
+end
+
 function Library:AddBlank(Frame: GuiObject, Size: UDim2)
     return New("Frame", {
         BackgroundTransparency = 1,
@@ -6570,6 +6580,33 @@ do
             end,
             Parent = Checkbox,
         })
+        Library:AddHover(
+            Button,
+            Toggle.Connections,
+            function()
+                if Toggle.Disabled then
+                    return
+                end
+
+                TweenService:Create(Checkbox, Library.ToggleTransitionInfo, {
+                    Size = UDim2.fromScale(1.12, 1.12),
+                }):Play()
+                TweenService:Create(CheckboxStroke, Library.ToggleTransitionInfo, {
+                    Transparency = 0.3,
+                    Color = Library.Scheme.AccentColor,
+                }):Play()
+            end,
+            function()
+                if Toggle.Disabled then
+                    return
+                end
+
+                TweenService:Create(Checkbox, Library.ToggleTransitionInfo, {
+                    Size = UDim2.fromScale(1, 1),
+                }):Play()
+                Toggle:Display()
+            end
+        )
         New("UIGradient", {
             Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
             Parent = Checkbox,
@@ -6843,6 +6880,33 @@ do
             end,
             Parent = Switch,
         })
+        Library:AddHover(
+            Button,
+            Toggle.Connections,
+            function()
+                if Toggle.Disabled then
+                    return
+                end
+
+                TweenService:Create(Switch, Library.ToggleTransitionInfo, {
+                    Size = UDim2.fromOffset(35, 19.5),
+                }):Play()
+                TweenService:Create(SwitchStroke, Library.ToggleTransitionInfo, {
+                    Transparency = 0.3,
+                    Color = Library.Scheme.AccentColor,
+                }):Play()
+            end,
+            function()
+                if Toggle.Disabled then
+                    return
+                end
+
+                TweenService:Create(Switch, Library.ToggleTransitionInfo, {
+                    Size = UDim2.fromOffset(32, 18),
+                }):Play()
+                Toggle:Display()
+            end
+        )
         New("UIGradient", {
             Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
             Parent = Switch,
@@ -7223,6 +7287,29 @@ do
             }):Play()
         end))
 
+        Library:AddHover(
+            Box,
+            Input.Connections,
+            function()
+                if Input.Disabled or Box:IsFocused() then
+                    return
+                end
+
+                TweenService:Create(BoxStroke, Library.TweenInfo, {
+                    Color = Library.Scheme.AccentColor,
+                }):Play()
+            end,
+            function()
+                if Input.Disabled or Box:IsFocused() then
+                    return
+                end
+
+                TweenService:Create(BoxStroke, Library.TweenInfo, {
+                    Color = Library.Scheme.OutlineColor,
+                }):Play()
+            end
+        )
+
         if typeof(Input.Tooltip) == "string" or typeof(Input.DisabledTooltip) == "string" then
             Input.TooltipTable = Library:AddTooltip(Input.Tooltip, Input.DisabledTooltip, Box)
             Input.TooltipTable.Disabled = Input.Disabled
@@ -7339,7 +7426,7 @@ do
             Parent = Holder,
         })
 
-        New("UIStroke", {
+        local BarStroke = New("UIStroke", {
             Color = "OutlineColor",
             Parent = Bar,
         })
@@ -7413,6 +7500,36 @@ do
                 return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(40, 40, 40), 0.45))
             end,
         })
+        Library:AddHover(
+            Bar,
+            Slider.Connections,
+            function()
+                if Slider.Disabled then
+                    return
+                end
+
+                TweenService:Create(Bar, Library.SliderTransitionInfo, {
+                    Size = UDim2.new(1, 0, 0, 16.5),
+                }):Play()
+                TweenService:Create(BarStroke, Library.SliderTransitionInfo, {
+                    Color = Library.Scheme.AccentColor,
+                    Transparency = 0.2,
+                }):Play()
+            end,
+            function()
+                if Slider.Disabled then
+                    return
+                end
+
+                TweenService:Create(Bar, Library.SliderTransitionInfo, {
+                    Size = UDim2.new(1, 0, 0, 15),
+                }):Play()
+                TweenService:Create(BarStroke, Library.SliderTransitionInfo, {
+                    Color = Library.Scheme.OutlineColor,
+                    Transparency = 0,
+                }):Play()
+            end
+        )
 
         function Slider:UpdateColors()
             if Library.Unloaded then
@@ -10410,19 +10527,25 @@ function Library:CreateWindow(WindowInfo)
         )
         Library:AddOutline(MainFrame)
         do
-            local ShadowLayers = {
-                { Spread = 6, OffsetY = 4, Transparency = 0.78 },
-                { Spread = 11, OffsetY = 8, Transparency = 0.9 },
-            }
-            for Index = #ShadowLayers, 1, -1 do
-                local Layer = ShadowLayers[Index]
+            local TotalLayers = 10
+            local MinSpread = 3
+            local MaxSpread = 26
+            local MinOffsetY = 3
+            local MaxOffsetY = 12
+            local LayerAlpha = 0.04
+
+            for Index = TotalLayers, 1, -1 do
+                local Ratio = Index / TotalLayers
+                local Spread = math.floor(MinSpread + (MaxSpread - MinSpread) * Ratio)
+                local OffsetY = math.floor(MinOffsetY + (MaxOffsetY - MinOffsetY) * Ratio)
+
                 local Shadow = New("Frame", {
                     Name = "DepthShadow",
                     AnchorPoint = Vector2.new(0.5, 0.5),
-                    Position = UDim2.new(0.5, 0, 0.5, Layer.OffsetY),
-                    Size = UDim2.new(1, Layer.Spread * 2, 1, Layer.Spread * 2),
+                    Position = UDim2.new(0.5, 0, 0.5, OffsetY),
+                    Size = UDim2.new(1, Spread * 2, 1, Spread * 2),
                     BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-                    BackgroundTransparency = Layer.Transparency,
+                    BackgroundTransparency = 1 - LayerAlpha,
                     BorderSizePixel = 0,
                     ZIndex = 0,
                     Parent = MainFrame,
@@ -10430,7 +10553,7 @@ function Library:CreateWindow(WindowInfo)
                 table.insert(
                     Library.Corners,
                     New("UICorner", {
-                        CornerRadius = UDim.new(0, WindowInfo.CornerRadius + Layer.Spread / 2),
+                        CornerRadius = UDim.new(0, WindowInfo.CornerRadius + Spread),
                         Parent = Shadow,
                     })
                 )
