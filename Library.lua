@@ -10409,6 +10409,41 @@ function Library:CreateWindow(WindowInfo)
             })
         )
         Library:AddOutline(MainFrame)
+        do
+            local ShadowLayers = {
+                { Spread = 6, OffsetY = 4, Transparency = 0.78 },
+                { Spread = 11, OffsetY = 8, Transparency = 0.9 },
+            }
+            for Index = #ShadowLayers, 1, -1 do
+                local Layer = ShadowLayers[Index]
+                local Shadow = New("Frame", {
+                    Name = "DepthShadow",
+                    AnchorPoint = Vector2.new(0.5, 0.5),
+                    Position = UDim2.new(0.5, 0, 0.5, Layer.OffsetY),
+                    Size = UDim2.new(1, Layer.Spread * 2, 1, Layer.Spread * 2),
+                    BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+                    BackgroundTransparency = Layer.Transparency,
+                    BorderSizePixel = 0,
+                    ZIndex = 0,
+                    Parent = MainFrame,
+                })
+                table.insert(
+                    Library.Corners,
+                    New("UICorner", {
+                        CornerRadius = UDim.new(0, WindowInfo.CornerRadius + Layer.Spread / 2),
+                        Parent = Shadow,
+                    })
+                )
+            end
+        end
+        New("UIGradient", {
+            Rotation = 90,
+            ColorSequence = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(214, 214, 214)),
+            }),
+            Parent = MainFrame,
+        })
         Library:MakeLine(MainFrame, {
             Position = UDim2.fromOffset(0, 48),
             Size = UDim2.new(1, 0, 0, 1),
@@ -11859,6 +11894,14 @@ function Library:CreateWindow(WindowInfo)
                     Parent = GroupboxHolder,
                 })
                 Library:AddOutline(GroupboxHolder)
+                New("UIGradient", {
+                    Rotation = 90,
+                    ColorSequence = ColorSequence.new({
+                        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+                        ColorSequenceKeypoint.new(1, Color3.fromRGB(228, 228, 228)),
+                    }),
+                    Parent = GroupboxHolder,
+                })
 
                 GroupboxTop = New("Frame", {
                     AutomaticSize = Enum.AutomaticSize.Y,
