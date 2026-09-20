@@ -11059,6 +11059,66 @@ function Library:CreateWindow(WindowInfo)
             Parent = Tabs,
         })
 
+        --// Sidebar Jump Box \\--
+        local SidebarSearchBox = New("TextBox", {
+            BackgroundColor3 = "MainColor",
+            LayoutOrder = -10000,
+            PlaceholderText = "Search tabs...",
+            Size = UDim2.new(1, -6, 0, 30),
+            TextScaled = true,
+            Parent = Tabs,
+        })
+        table.insert(
+            Library.Corners,
+            New("UICorner", {
+                CornerRadius = UDim.new(0, WindowInfo.CornerRadius),
+                Parent = SidebarSearchBox,
+            })
+        )
+        New("UIPadding", {
+            PaddingBottom = UDim.new(0, 8),
+            PaddingLeft = UDim.new(0, 8),
+            PaddingRight = UDim.new(0, 8),
+            PaddingTop = UDim.new(0, 8),
+            Parent = SidebarSearchBox,
+        })
+        local SidebarSearchStroke = New("UIStroke", {
+            Color = "OutlineColor",
+            Parent = SidebarSearchBox,
+        })
+        do
+            local SidebarSearchIcon = Library:GetIcon("search")
+            if SidebarSearchIcon then
+                local SidebarSearchIconImage = New("ImageLabel", {
+                    AnchorPoint = Vector2.new(1, 0.5),
+                    ImageColor3 = "FontColor",
+                    ImageTransparency = 0.5,
+                    Position = UDim2.new(1, -8, 0.5, 0),
+                    Size = UDim2.fromOffset(16, 16),
+                    ZIndex = 2,
+                    Parent = SidebarSearchBox,
+                })
+                Library:ApplyLucideIcon(SidebarSearchIconImage, SidebarSearchIcon)
+            end
+        end
+
+        --// Sliding Tab Indicator \\--
+        local Indicator = New("Frame", {
+            AnchorPoint = Vector2.new(0, 0),
+            BackgroundColor3 = "AccentColor",
+            BorderSizePixel = 0,
+            Visible = false,
+            ZIndex = 3,
+            Parent = MainFrame,
+        })
+        table.insert(
+            Library.Corners,
+            New("UICorner", {
+                CornerRadius = UDim.new(0, 3),
+                Parent = Indicator,
+            })
+        )
+
         --// Container \\--
         Container = New("Frame", {
             AnchorPoint = Vector2.new(1, 0),
@@ -11085,6 +11145,10 @@ function Library:CreateWindow(WindowInfo)
     --// Window Table \\--
     local Window = {}
     local Fading = false
+    local WindowTabList = {}
+    local ActiveButton = nil
+    local IndicatorTween = nil
+    local MainScale = MainFrame:FindFirstChildOfClass("UIScale")
 
     local function SetUICorner(UICorner, Corner, HalfValue)
         local Current = UICorner[Corner]
@@ -11324,6 +11388,10 @@ function Library:CreateWindow(WindowInfo)
             Button.Padding.PaddingTop = UDim.new(0, IsCompact and 6 or 11)
             Button.Icon.SizeConstraint = IsCompact and Enum.SizeConstraint.RelativeXY or Enum.SizeConstraint.RelativeYY
         end
+
+        if ActiveButton then
+            Window:UpdateIndicator(ActiveButton, true)
+        end
     end
 
     function Window:IsSidebarCompacted()
@@ -11353,6 +11421,78 @@ function Library:CreateWindow(WindowInfo)
         end
         if not IsCompact then
             LastExpandedWidth = Width
+        end
+    end
+
+    function Window:UpdateIndicator(Button, Instant)
+        ActiveButton = Button or ActiveButton
+        if not ActiveButton or not ActiveButton.Visible then
+            return
+        end
+
+        local Scale = (MainScale and MainScale.Scale) or 1
+        local P = MainFrame.AbsolutePosition
+        local X = (ActiveButton.AbsolutePosition.X - P.X) / Scale
+        local Y = (ActiveButton.AbsolutePosition.Y - P.Y) / Scale
+        local W = ActiveButton.AbsoluteSize.X / Scale
+        local H = ActiveButton.AbsoluteSize.Y / Scale
+
+        if IndicatorTween then
+            IndicatorTween:Cancel()
+            IndicatorTween = nil
+        end
+
+        if Instant or not Indicator.Visible then
+            Indicator.Position = UDim2.fromOffset(X, Y + H - 3)
+            Indicator.Size = UDim2.fromOffset(W, 3)
+            Indicator.Visible = true
+
+            return
+        end
+
+        IndicatorTween = TweenService:Create(Indicator, Library.TweenInfo, {
+            Position = UDim2.fromOffset(X, Y + H - 3),
+            Size = UDim2.fromOffset(W, 3),
+        })
+        IndicatorTween:Play()
+    end
+
+    function Window:ShowTabByIndex(Index)
+        local Seen = 0
+        for _, Entry in WindowTabList do
+            if Entry.Button.Visible then
+                Seen = Seen + 1
+                if Seen == Index then
+                    if Entry.Tab and Entry.Tab.Show then
+                        Entry.Tab:Show()
+                    end
+
+                    return
+                end
+            end
+        end
+    end
+
+    function Window:FilterTabs(Query)
+        Query = tostring(Query or "")
+
+        if Query == "" then
+            for _, Entry in WindowTabList do
+                Entry.Button.Visible = true
+            end
+
+            return
+        end
+
+        local Lower = string.lower(Query)
+        for _, Entry in WindowTabList do
+            Entry.Button.Visible = string.lower(Entry.Name):find(Lower, 1, true) ~= nil
+        end
+    end
+
+    function Window:FocusSidebarSearch()
+        if SidebarSearchBox and SidebarSearchBox.Visible then
+            SidebarSearchBox:CaptureFocus()
         end
     end
 
@@ -12567,6 +12707,8 @@ function Library:CreateWindow(WindowInfo)
             Tab:RefreshSides()
 
             Library.ActiveTab = Tab
+            ActiveButton = TabButton
+            Window:UpdateIndicator(TabButton)
 
             if Library.Searching then
                 Library:UpdateSearch(Library.SearchText)
@@ -12649,6 +12791,20 @@ function Library:CreateWindow(WindowInfo)
                     end
                 end
 
+                for Index, Entry in WindowTabList do
+                    if Entry.Button == TabButton then
+                        if Entry.Tooltip then
+                            Entry.Tooltip:Destroy()
+                        end
+                        if ActiveButton == TabButton then
+                            ActiveButton = nil
+                            Indicator.Visible = false
+                        end
+                        table.remove(WindowTabList, Index)
+                        break
+                    end
+                end
+
                 TabButton:Destroy()
             end
 
@@ -12669,6 +12825,12 @@ function Library:CreateWindow(WindowInfo)
         TabButton.MouseButton1Click:Connect(Tab.Show)
 
         Library.Tabs[Name] = Tab
+        table.insert(WindowTabList, {
+            Button = TabButton,
+            Name = Name,
+            Tab = Tab,
+            Tooltip = Library:AddTooltip(Name, nil, TabButton),
+        })
 
         return Tab
     end
@@ -12895,6 +13057,20 @@ function Library:CreateWindow(WindowInfo)
                     end
                 end
 
+                for Index, Entry in WindowTabList do
+                    if Entry.Button == TabButton then
+                        if Entry.Tooltip then
+                            Entry.Tooltip:Destroy()
+                        end
+                        if ActiveButton == TabButton then
+                            ActiveButton = nil
+                            Indicator.Visible = false
+                        end
+                        table.remove(WindowTabList, Index)
+                        break
+                    end
+                end
+
                 TabButton:Destroy()
             end
 
@@ -12957,6 +13133,8 @@ function Library:CreateWindow(WindowInfo)
             Tab:RefreshSides()
 
             Library.ActiveTab = Tab
+            ActiveButton = TabButton
+            Window:UpdateIndicator(TabButton)
 
             if Library.Searching then
                 Library:UpdateSearch(Library.SearchText)
@@ -13010,6 +13188,12 @@ function Library:CreateWindow(WindowInfo)
         setmetatable(Tab, BaseGroupbox)
 
         Library.Tabs[Name] = Tab
+        table.insert(WindowTabList, {
+            Button = TabButton,
+            Name = Name,
+            Tab = Tab,
+            Tooltip = Library:AddTooltip(Name, nil, TabButton),
+        })
 
         return Tab
     end
@@ -13746,15 +13930,88 @@ function Library:CreateWindow(WindowInfo)
         Library:UpdateSearch(SearchBox.Text)
     end))
 
+    Library:GiveSignal(SidebarSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        Window:FilterTabs(SidebarSearchBox.Text)
+    end))
+
+    Library:GiveSignal(SidebarSearchBox.Focused:Connect(function()
+        Library.Registry[SidebarSearchStroke].Color = "AccentColor"
+        TweenService:Create(SidebarSearchStroke, Library.TweenInfo, {
+            Color = Library.Scheme.AccentColor,
+        }):Play()
+    end))
+
+    Library:GiveSignal(SidebarSearchBox.FocusLost:Connect(function(EnterPressed)
+        Library.Registry[SidebarSearchStroke].Color = "OutlineColor"
+        TweenService:Create(SidebarSearchStroke, Library.TweenInfo, {
+            Color = Library.Scheme.OutlineColor,
+        }):Play()
+
+        if EnterPressed then
+            for _, Entry in WindowTabList do
+                if Entry.Button.Visible then
+                    if Entry.Tab and Entry.Tab.Show then
+                        Entry.Tab:Show()
+                    end
+
+                    break
+                end
+            end
+        end
+    end))
+
+    Library:GiveSignal(Tabs:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+        if ActiveButton then
+            Window:UpdateIndicator(ActiveButton, true)
+        end
+    end))
+
     Library:GiveSignal(UserInputService.InputBegan:Connect(function(Input: InputObject)
         if Library.Unloaded then
             return
+        end
+
+        if Input.UserInputType == Enum.UserInputType.Keyboard and not UserInputService:GetFocusedTextBox() then
+            local IsCtrl =
+                UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)
+                or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
+
+            if IsCtrl and Input.KeyCode == Enum.KeyCode.F then
+                Window:FocusSidebarSearch()
+
+                return
+            end
+
+            if IsCtrl then
+                local NumberKeys = {
+                    [Enum.KeyCode.One] = 1,
+                    [Enum.KeyCode.Two] = 2,
+                    [Enum.KeyCode.Three] = 3,
+                    [Enum.KeyCode.Four] = 4,
+                    [Enum.KeyCode.Five] = 5,
+                    [Enum.KeyCode.Six] = 6,
+                    [Enum.KeyCode.Seven] = 7,
+                    [Enum.KeyCode.Eight] = 8,
+                    [Enum.KeyCode.Nine] = 9,
+                }
+                local Number = NumberKeys[Input.KeyCode]
+                if Number then
+                    Window:ShowTabByIndex(Number)
+
+                    return
+                end
+            end
         end
 
         if Input.KeyCode == Enum.KeyCode.Escape then
             -- Releasing focus from a text input takes priority and never toggles the window --
             local FocusedBox = UserInputService:GetFocusedTextBox()
             if FocusedBox then
+                if FocusedBox == SidebarSearchBox then
+                    SidebarSearchBox.Text = ""
+                    Window:FilterTabs("")
+                end
+
                 FocusedBox:ReleaseFocus()
                 return
             end
