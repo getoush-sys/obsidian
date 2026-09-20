@@ -11381,13 +11381,25 @@ function Library:CreateWindow(WindowInfo)
         end
     end
 
-    function Window:UpdateIndicator(Button, Instant)
-        ActiveButton = Button or ActiveButton
-        if not ActiveButton or not ActiveButton.Visible then
-            return
-        end
+        function Window:UpdateIndicator(Button, Instant)
+            ActiveButton = Button or ActiveButton
+            if not ActiveButton or not ActiveButton.Visible then
+                return
+            end
 
-        local Scale = (MainScale and MainScale.Scale) or 1
+            --// Lazy-build the sliding tab Indicator if it wasn't created yet \\--
+            if not Indicator then
+                Indicator = New("Frame", {
+                    AnchorPoint = Vector2.new(0, 0),
+                    BackgroundColor3 = "AccentColor",
+                    BorderSizePixel = 0,
+                    Visible = false,
+                    ZIndex = 3,
+                    Parent = MainFrame,
+                })
+            end
+
+            local Scale = (MainScale and MainScale.Scale) or 1
         local P = MainFrame.AbsolutePosition
         local X = (ActiveButton.AbsolutePosition.X - P.X) / Scale
         local Y = (ActiveButton.AbsolutePosition.Y - P.Y) / Scale
