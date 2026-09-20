@@ -10438,7 +10438,7 @@ function Library:CreateWindow(WindowInfo)
         end
         New("UIGradient", {
             Rotation = 90,
-            ColorSequence = ColorSequence.new({
+            Color = ColorSequence.new({
                 ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
                 ColorSequenceKeypoint.new(1, Color3.fromRGB(214, 214, 214)),
             }),
@@ -11896,7 +11896,7 @@ function Library:CreateWindow(WindowInfo)
                 Library:AddOutline(GroupboxHolder)
                 New("UIGradient", {
                     Rotation = 90,
-                    ColorSequence = ColorSequence.new({
+                    Color = ColorSequence.new({
                         ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
                         ColorSequenceKeypoint.new(1, Color3.fromRGB(228, 228, 228)),
                     }),
