@@ -10617,7 +10617,6 @@ function Library:CreateWindow(WindowInfo)
     Library.TabSwipeOffset = math.max(1, WindowInfo.TabSwipeOffset or 26)
     Library.TabSwipeFrom = WindowInfo.TabSwipeFrom or "right"
 
-    local IsDefaultSearchbarSize = WindowInfo.SearchbarSize == UDim2.fromScale(1, 1)
     local MainFrame
     local DividerLine
     local TitleHolder
@@ -10793,7 +10792,8 @@ function Library:CreateWindow(WindowInfo)
 
         --// Title \\--
         TitleHolder = New("Frame", {
-            BackgroundTransparency = 1,
+            BackgroundColor3 = "BackgroundColor",
+            BorderSizePixel = 0,
             Size = UDim2.new(0, InitialLeftWidth, 1, 0),
             Parent = TopBar,
         })
@@ -10808,6 +10808,8 @@ function Library:CreateWindow(WindowInfo)
         if WindowInfo.Icon then
             local Icon = Library:GetCustomIcon(WindowInfo.Icon)
             WindowIcon = New("ImageLabel", {
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
                 Size = WindowInfo.IconSize,
                 ImageColor3 = "AccentColor",
                 Parent = TitleHolder,
@@ -10818,9 +10820,11 @@ function Library:CreateWindow(WindowInfo)
         else
             WindowIcon = New("TextLabel", {
                 BackgroundTransparency = 1,
+                BorderSizePixel = 0,
                 Size = WindowInfo.IconSize,
                 Text = WindowInfo.Title:sub(1, 1),
                 TextScaled = true,
+                TextColor3 = "AccentColor",
                 Visible = false,
                 Parent = TitleHolder,
             })
@@ -10834,6 +10838,7 @@ function Library:CreateWindow(WindowInfo)
         )
         WindowTitle = New("TextLabel", {
             BackgroundTransparency = 1,
+            BorderSizePixel = 0,
             Size = UDim2.new(0, X, 1, 0),
             Text = WindowInfo.Title,
             TextColor3 = "AccentColor",
@@ -10859,7 +10864,7 @@ function Library:CreateWindow(WindowInfo)
         })
 
         CurrentTabInfo = New("Frame", {
-            Size = UDim2.fromScale(WindowInfo.DisableSearch and 1 or 0.5, 1),
+            Size = UDim2.fromScale(1, 1),
             Visible = false,
             BackgroundTransparency = 1,
             Parent = RightWrapper,
@@ -10908,16 +10913,14 @@ function Library:CreateWindow(WindowInfo)
         })
 
         SearchBox = New("TextBox", {
+            AnchorPoint = Vector2.new(0, 0.5),
             BackgroundColor3 = "MainColor",
             PlaceholderText = "Search",
-            Size = WindowInfo.SearchbarSize,
+            Position = UDim2.new(0, InitialLeftWidth + 10, 0.5, 0),
+            Size = UDim2.fromOffset(180, 30),
             TextScaled = true,
             Visible = not (WindowInfo.DisableSearch or false),
-            Parent = RightWrapper,
-        })
-        New("UIFlexItem", {
-            FlexMode = Enum.UIFlexMode.Shrink,
-            Parent = SearchBox,
+            Parent = TopBar,
         })
         table.insert(
             Library.Corners,
@@ -11371,6 +11374,7 @@ function Library:CreateWindow(WindowInfo)
         DividerLine.Position = UDim2.fromOffset(Width, 0)
 
         TitleHolder.Size = UDim2.new(0, Width, 1, 0)
+        SearchBox.Position = UDim2.new(0, Width + 10, 0.5, 0)
         RightWrapper.Size = UDim2.new(1, -Width - 57 - 1, 1, -16)
         Tabs.Size = UDim2.new(0, Width, 1, -70)
         Container.Size = UDim2.new(1, -Width - 1, 1, -70)
@@ -11447,18 +11451,11 @@ function Library:CreateWindow(WindowInfo)
     function Window:ShowTabInfo(Name, Description)
         CurrentTabLabel.Text = Name
         CurrentTabDescription.Text = Description
-
-        if IsDefaultSearchbarSize then
-            SearchBox.Size = UDim2.fromScale(0.5, 1)
-        end
         CurrentTabInfo.Visible = true
     end
 
     function Window:HideTabInfo()
         CurrentTabInfo.Visible = false
-        if IsDefaultSearchbarSize then
-            SearchBox.Size = UDim2.fromScale(1, 1)
-        end
     end
 
     function Window:AddTab(...)
