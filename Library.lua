@@ -378,7 +378,7 @@ local Templates = {
 
         Position = UDim2.fromOffset(6, 6),
         Size = UDim2.fromOffset(720, 600),
-        IconSize = UDim2.fromOffset(30, 30),
+        IconSize = UDim2.fromOffset(38, 38),
 
         AutoShow = true,
         Center = true,
@@ -10809,6 +10809,7 @@ function Library:CreateWindow(WindowInfo)
             local Icon = Library:GetCustomIcon(WindowInfo.Icon)
             WindowIcon = New("ImageLabel", {
                 Size = WindowInfo.IconSize,
+                ImageColor3 = "AccentColor",
                 Parent = TitleHolder,
             })
             if Icon then
@@ -10835,6 +10836,7 @@ function Library:CreateWindow(WindowInfo)
             BackgroundTransparency = 1,
             Size = UDim2.new(0, X, 1, 0),
             Text = WindowInfo.Title,
+            TextColor3 = "AccentColor",
             TextSize = 20,
             Parent = TitleHolder,
         })
