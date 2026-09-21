@@ -13943,6 +13943,14 @@ function Library:CreateWindow(WindowInfo)
         Library.IsRobloxFocused = false
     end))
 
+    --// The TopBar's right host must never render a box at the end of the bar. \\--
+    RightWrapper:GetPropertyChangedSignal("BackgroundTransparency"):Connect(function()
+        if RightWrapper.BackgroundTransparency ~= 1 then
+            RightWrapper.BackgroundTransparency = 1
+        end
+    end)
+    RightWrapper.BackgroundTransparency = 1
+
     Window.MainFrame = MainFrame
     Library.Window = Window
 
