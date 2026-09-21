@@ -4294,10 +4294,6 @@ do
                 end,
                 Parent = Checkbox,
             })
-            New("UIGradient", {
-                Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
-                Parent = Checkbox,
-            })
 
             local CheckImage = New("ImageLabel", {
                 ImageColor3 = "FontColor",
@@ -6742,10 +6738,6 @@ do
                 Toggle:Display()
             end
         )
-        New("UIGradient", {
-            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
-            Parent = Checkbox,
-        })
 
         local CheckImage = New("ImageLabel", {
             ImageColor3 = "FontColor",
@@ -7042,10 +7034,6 @@ do
                 Toggle:Display()
             end
         )
-        New("UIGradient", {
-            Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(150, 150, 150)),
-            Parent = Switch,
-        })
 
         local Ball = New("Frame", {
             BackgroundColor3 = "FontColor",
@@ -12253,16 +12241,8 @@ function Library:CreateWindow(WindowInfo)
                     Parent = GroupboxHolder,
                 })
                 Library:AddOutline(GroupboxHolder)
-                New("UIGradient", {
-                    Rotation = 90,
-                    Color = ColorSequence.new({
-                        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-                        ColorSequenceKeypoint.new(1, Color3.fromRGB(228, 228, 228)),
-                    }),
-                    Parent = GroupboxHolder,
-                })
 
-                GroupboxTop = New("Frame", {
+GroupboxTop = New("Frame", {
                     AutomaticSize = Enum.AutomaticSize.Y,
                     BackgroundTransparency = 1,
                     Size = UDim2.fromScale(1, 0),
