@@ -10619,6 +10619,7 @@ function Library:CreateWindow(WindowInfo)
 
     local MainFrame
     local DividerLine
+    local SidebarShadow
     local TitleHolder
     local WindowTitle
     local WindowIcon
@@ -10724,12 +10725,37 @@ function Library:CreateWindow(WindowInfo)
         })
 
         DividerLine = New("Frame", {
-            BackgroundColor3 = "OutlineColor",
+            BackgroundTransparency = 1,
             Position = UDim2.fromOffset(InitialLeftWidth, 0),
             Size = UDim2.new(0, 1, 1, -21),
             Parent = MainFrame,
             ZIndex = 2
         })
+
+        --// Soft shadow cast off the sidebar's right edge, replacing the flat divider \\--
+        SidebarShadow = New("Frame", {
+            BackgroundTransparency = 1,
+            Position = UDim2.fromOffset(InitialLeftWidth, 0),
+            Size = UDim2.new(0, 1, 1, -21),
+            Parent = MainFrame,
+            ZIndex = 2,
+        })
+        local ShadowLayers = 5
+        local ShadowThickness = 24
+        local ShadowMaxAlpha = 0.16
+        for Index = ShadowLayers, 1, -1 do
+            local Width = math.floor(ShadowThickness * ((ShadowLayers - Index + 1) / ShadowLayers) + 0.5)
+            New("Frame", {
+                Name = "SidebarShadow",
+                BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+                BackgroundTransparency = 1 - ShadowMaxAlpha / Index,
+                BorderSizePixel = 0,
+                Position = UDim2.fromOffset(0, 0),
+                Size = UDim2.new(0, Width, 1, 0),
+                ZIndex = 2,
+                Parent = SidebarShadow,
+            })
+        end
 
         local BackgroundIcon = Library:GetCustomIcon(WindowInfo.BackgroundImage)
         HasBackgroundImage = BackgroundIcon ~= nil
@@ -11364,6 +11390,7 @@ function Library:CreateWindow(WindowInfo)
         Width = math.clamp(Width, 48, MainFrame.Size.X.Offset - WindowInfo.MinContainerWidth - 1)
 
         DividerLine.Position = UDim2.fromOffset(Width, 0)
+        SidebarShadow.Position = UDim2.fromOffset(Width, 0)
 
         TitleHolder.Size = UDim2.new(0, Width, 1, 0)
         SearchBox.Position = UDim2.new(0, Width + 10, 0.5, 0)
