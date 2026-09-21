@@ -3435,15 +3435,6 @@ function Library:AddContextMenu(
         end
     end
 
-    New("UIGradient", {
-        Rotation = 90,
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(224, 224, 224)),
-        }),
-        Parent = Menu,
-    })
-
     local ShadowHolder = New("Frame", {
         Name = "ContextShadow",
         BackgroundTransparency = 1,
@@ -3808,14 +3799,6 @@ table.insert(
         Parent = TooltipLabel,
     })
 )
-New("UIGradient", {
-    Rotation = 90,
-    Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(224, 224, 224)),
-    }),
-    Parent = TooltipLabel,
-})
 
 local TooltipShadow = New("Frame", {
     Name = "TooltipShadow",
@@ -10711,14 +10694,6 @@ function Library:CreateWindow(WindowInfo)
                 )
             end
         end
-        New("UIGradient", {
-            Rotation = 90,
-            Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(1, Color3.fromRGB(214, 214, 214)),
-            }),
-            Parent = MainFrame,
-        })
         Library:MakeLine(MainFrame, {
             Position = UDim2.fromOffset(0, 48),
             Size = UDim2.new(1, 0, 0, 1),
