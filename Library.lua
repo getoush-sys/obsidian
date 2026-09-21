@@ -7643,13 +7643,13 @@ do
         )
 
         local FillGradient = New("UIGradient", {
-            Color = ColorSequence.new(Library.Scheme.AccentColor, Library.Scheme.AccentColor:Lerp(Color3.fromRGB(40, 40, 40), 0.45)),
+            Color = ColorSequence.new(Library.Scheme.AccentColor),
             Parent = Fill,
         })
         Library:AddToRegistry(FillGradient, {
             Color = function()
                 local Color = Slider.Disabled and Library.Scheme.OutlineColor or Library.Scheme.AccentColor
-                return ColorSequence.new(Color, Color:Lerp(Color3.fromRGB(40, 40, 40), 0.45))
+                return ColorSequence.new(Color)
             end,
         })
         Library:AddHover(
