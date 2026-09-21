@@ -10932,7 +10932,9 @@ function Library:CreateWindow(WindowInfo)
 
         SearchBox = New("TextBox", {
             AnchorPoint = Vector2.new(0, 0.5),
-            BackgroundColor3 = "BackgroundColor",
+            BackgroundColor3 = function()
+                return Library:GetBetterColor(Library.Scheme.BackgroundColor, 1)
+            end,
             PlaceholderText = "Search",
             Position = UDim2.new(0, InitialLeftWidth + 10, 0.5, 0),
             Size = UDim2.fromOffset(180, 30),
