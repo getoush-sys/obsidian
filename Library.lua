@@ -10740,15 +10740,15 @@ function Library:CreateWindow(WindowInfo)
             Parent = MainFrame,
             ZIndex = 2,
         })
-        local ShadowLayers = 5
-        local ShadowThickness = 24
-        local ShadowMaxAlpha = 0.16
-        for Index = ShadowLayers, 1, -1 do
-            local Width = math.floor(ShadowThickness * ((ShadowLayers - Index + 1) / ShadowLayers) + 0.5)
+        local ShadowLayers = 20
+        local ShadowThickness = 28
+        local ShadowStepAlpha = 0.012
+        for Index = 1, ShadowLayers do
+            local Width = ShadowThickness * (Index / ShadowLayers)
             New("Frame", {
                 Name = "SidebarShadow",
                 BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-                BackgroundTransparency = 1 - ShadowMaxAlpha / Index,
+                BackgroundTransparency = 1 - ShadowStepAlpha,
                 BorderSizePixel = 0,
                 Position = UDim2.fromOffset(0, 0),
                 Size = UDim2.new(0, Width, 1, 0),
